@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Three.js 3D 街景展示 - 使用來自 threejsassets.com 的免費 3D 模型建構低多邊形城市街景" />
+  <title>Three.js 3D 街景遊樂場 — Low-Poly City Street Scene</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <canvas id="scene-canvas"></canvas>
+
+  <!-- Loading overlay -->
+  <div id="loading-overlay">
+    <div class="loader-container">
+      <div class="loader-ring"></div>
+      <div class="loader-text">
+        <h2>載入 3D 街景中…</h2>
+        <p id="loading-status">正在初始化場景</p>
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <span id="loading-percent">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- UI overlay -->
+  <div id="ui-overlay">
+    <div class="top-bar">
+      <div class="logo">
+        <span class="logo-icon">🏙️</span>
+        <span class="logo-text">Three.js 街景遊樂場</span>
+      </div>
+      <div class="lighting-selector" id="lighting-selector">
+        <button class="lighting-btn active" data-preset="day" title="白天模式">
+          <span class="preset-icon">☀️</span>
+          <span class="preset-label">白天</span>
+        </button>
+        <button class="lighting-btn" data-preset="rainy" title="雨天模式">
+          <span class="preset-icon">🌧️</span>
+          <span class="preset-label">雨天</span>
+        </button>
+        <button class="lighting-btn" data-preset="sunset" title="黃昏模式">
+          <span class="preset-icon">🌅</span>
+          <span class="preset-label">黃昏</span>
+        </button>
+        <button class="lighting-btn" data-preset="night" title="夜晚模式">
+          <span class="preset-icon">🌙</span>
+          <span class="preset-label">夜晚</span>
+        </button>
+      </div>
+
+      <div class="controls">
+        <button id="btn-reset" class="ctrl-btn" title="重置視角">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+        </button>
+        <button id="btn-toggle-rotate" class="ctrl-btn active" title="開啟/關閉自動運鏡">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="14" y="4" width="4" height="16" rx="1"/>
+            <rect x="6" y="4" width="4" height="16" rx="1"/>
+          </svg>
+        </button>
+        <div id="camera-mode-wrapper" class="camera-mode-wrapper">
+          <select id="camera-mode-select" class="camera-mode-select" title="選擇運鏡模式">
+            <option value="cinematic">🎬 動態巡航</option>
+            <option value="panorama">🏙️ 全景環繞</option>
+            <option value="street">🏎️ 街景俯仰</option>
+            <option value="poi">🎯 焦點巡航</option>
+            <option value="auto_sequence">🔄 自動切換</option>
+          </select>
+        </div>
+        <button id="btn-info" class="ctrl-btn" title="模型來源與授權">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4"/>
+            <path d="M12 8h.01"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Camera Mode Toast Notification -->
+    <div id="camera-toast" class="camera-toast hidden">
+      <span id="camera-toast-text">🎬 運鏡模式：動態巡航</span>
+    </div>
+
+    <!-- Info panel -->
+    <div id="info-panel" class="info-panel hidden">
+      <div class="info-header">
+        <h3>模型來源與授權</h3>
+        <button id="btn-close-info" class="close-btn">✕</button>
+      </div>
+      <div class="info-content">
+        <p class="info-license">所有模型均來自 <a href="https://threejsassets.com/assets/free" target="_blank" rel="noopener">threejsassets.com</a> 免費方案，可商用，無需署名或註冊。</p>
+        <div id="model-list" class="model-list"></div>
+      </div>
+    </div>
+
+    <div class="bottom-hint">
+      <span>🖱️ 拖曳旋轉 · 滾輪縮放 · 右鍵平移</span>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
