@@ -25,7 +25,7 @@ const MODEL_MANIFEST = [
     name: 'Road Straight 01',
     category: 'Roads & Streets',
     url: 'https://threejsassets.com/assets/road-straight-01',
-    file: '/models/road-straight-01.glb',
+    file: './models/road-straight-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -33,7 +33,7 @@ const MODEL_MANIFEST = [
     name: 'Avenue 4-Way Intersection 01',
     category: 'Roads & Avenues',
     url: 'https://threejsassets.com/assets/road-avenue-4way-01',
-    file: '/models/road-avenue-4way-01.glb',
+    file: './models/road-avenue-4way-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -41,7 +41,7 @@ const MODEL_MANIFEST = [
     name: 'Road Corner 01',
     category: 'Roads & Streets',
     url: 'https://threejsassets.com/assets/road-corner-01',
-    file: '/models/road-corner-01.glb',
+    file: './models/road-corner-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -49,7 +49,7 @@ const MODEL_MANIFEST = [
     name: 'Avenue T-Junction 01',
     category: 'Roads & Avenues',
     url: 'https://threejsassets.com/assets/road-avenue-tjunction-01',
-    file: '/models/road-avenue-tjunction-01.glb',
+    file: './models/road-avenue-tjunction-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   // ── Buildings ─────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ const MODEL_MANIFEST = [
     name: 'Apartment Block 01',
     category: 'Low & Mid-Rise',
     url: 'https://threejsassets.com/assets/apartment-block-01',
-    file: '/models/apartment-block-01.glb',
+    file: './models/apartment-block-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -66,7 +66,7 @@ const MODEL_MANIFEST = [
     name: 'Corner Store 01',
     category: 'Low & Mid-Rise',
     url: 'https://threejsassets.com/assets/corner-store-01',
-    file: '/models/corner-store-01.glb',
+    file: './models/corner-store-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -74,7 +74,7 @@ const MODEL_MANIFEST = [
     name: 'Convenience Store 01',
     category: 'Towers & Civic',
     url: 'https://threejsassets.com/assets/convenience-store-01',
-    file: '/models/convenience-store-01.glb',
+    file: './models/convenience-store-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   // ── Vehicles ──────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ const MODEL_MANIFEST = [
     name: 'Car Sedan 01',
     category: 'Vehicles',
     url: 'https://threejsassets.com/assets/car-sedan-01',
-    file: '/models/car-sedan-01.glb',
+    file: './models/car-sedan-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -91,7 +91,7 @@ const MODEL_MANIFEST = [
     name: 'Taxi 01',
     category: 'Vehicles',
     url: 'https://threejsassets.com/assets/taxi-01',
-    file: '/models/taxi-01.glb',
+    file: './models/taxi-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -99,7 +99,7 @@ const MODEL_MANIFEST = [
     name: 'Delivery Van 01',
     category: 'Vehicles',
     url: 'https://threejsassets.com/assets/delivery-van-01',
-    file: '/models/delivery-van-01.glb',
+    file: './models/delivery-van-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   // ── Nature ────────────────────────────────────────────────────────
@@ -108,7 +108,7 @@ const MODEL_MANIFEST = [
     name: 'Street Tree 01',
     category: 'Nature',
     url: 'https://threejsassets.com/assets/street-tree-01',
-    file: '/models/street-tree-01.glb',
+    file: './models/street-tree-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -116,7 +116,7 @@ const MODEL_MANIFEST = [
     name: 'Bush Round 01',
     category: 'Nature',
     url: 'https://threejsassets.com/assets/bush-round-01',
-    file: '/models/bush-round-01.glb',
+    file: './models/bush-round-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   // ── Street Furniture ──────────────────────────────────────────────
@@ -125,7 +125,7 @@ const MODEL_MANIFEST = [
     name: 'Street Lamp 01',
     category: 'Street Furniture',
     url: 'https://threejsassets.com/assets/street-lamp-01',
-    file: '/models/street-lamp-01.glb',
+    file: './models/street-lamp-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -133,7 +133,7 @@ const MODEL_MANIFEST = [
     name: 'Bench 01',
     category: 'Street Furniture',
     url: 'https://threejsassets.com/assets/bench-01',
-    file: '/models/bench-01.glb',
+    file: './models/bench-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   {
@@ -141,7 +141,7 @@ const MODEL_MANIFEST = [
     name: 'Bus Shelter 01',
     category: 'Street Furniture',
     url: 'https://threejsassets.com/assets/bus-shelter-01',
-    file: '/models/bus-shelter-01.glb',
+    file: './models/bus-shelter-01.glb',
     license: 'Free — commercial use, no attribution',
   },
   // ── Sky ───────────────────────────────────────────────────────────
@@ -150,7 +150,7 @@ const MODEL_MANIFEST = [
     name: 'Cloud Puff 01',
     category: 'Sky',
     url: 'https://threejsassets.com/assets/cloud-puff-01',
-    file: '/models/cloud-puff-01.glb',
+    file: './models/cloud-puff-01.glb',
     license: 'Free — commercial use, no attribution',
   },
 ];
