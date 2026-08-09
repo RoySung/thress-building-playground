@@ -156,7 +156,7 @@ const MODEL_MANIFEST = [
 ];
 
 /* ========================================================================
-   Globals
+   Globals & Lighting Presets
    ======================================================================== */
 
 let scene, camera, renderer, controls;
@@ -167,6 +167,107 @@ const clock = new THREE.Clock();
 // Animated objects
 const movingCars = [];
 const clouds = [];
+
+// Lights & Weather state
+let ambientLight, hemiLight, sunLight, fillLight, rimLight;
+const streetLampLights = [];
+let rainParticles = null;
+let rainGeometry = null;
+
+const LIGHTING_PRESETS = {
+  day: {
+    name: '白天',
+    bgColor: new THREE.Color(0x87ceeb),
+    fogColor: new THREE.Color(0xc8e6ff),
+    fogDensity: 0.008,
+    sunColor: new THREE.Color(0xfff8e7),
+    sunIntensity: 1.8,
+    sunPosition: new THREE.Vector3(25, 35, 30),
+    ambientColor: new THREE.Color(0xfff5e6),
+    ambientIntensity: 0.5,
+    hemiSkyColor: new THREE.Color(0x87ceeb),
+    hemiGroundColor: new THREE.Color(0x556b2f),
+    hemiIntensity: 0.4,
+    fillColor: new THREE.Color(0xb0d4f1),
+    fillIntensity: 0.4,
+    rimColor: new THREE.Color(0xffecd2),
+    rimIntensity: 0.3,
+    exposure: 1.2,
+    lampIntensity: 0.0,
+    cloudColor: new THREE.Color(0xffffff),
+    rain: false,
+  },
+  rainy: {
+    name: '雨天',
+    bgColor: new THREE.Color(0x3a4856),
+    fogColor: new THREE.Color(0x3a4856),
+    fogDensity: 0.018,
+    sunColor: new THREE.Color(0x8aa0b5),
+    sunIntensity: 0.6,
+    sunPosition: new THREE.Vector3(15, 40, 15),
+    ambientColor: new THREE.Color(0x506275),
+    ambientIntensity: 0.45,
+    hemiSkyColor: new THREE.Color(0x4a5d6e),
+    hemiGroundColor: new THREE.Color(0x232d37),
+    hemiIntensity: 0.35,
+    fillColor: new THREE.Color(0x64748b),
+    fillIntensity: 0.3,
+    rimColor: new THREE.Color(0x94a3b8),
+    rimIntensity: 0.2,
+    exposure: 0.9,
+    lampIntensity: 1.4,
+    cloudColor: new THREE.Color(0x52606d),
+    rain: true,
+  },
+  sunset: {
+    name: '黃昏',
+    bgColor: new THREE.Color(0xe06d53),
+    fogColor: new THREE.Color(0xee8e73),
+    fogDensity: 0.009,
+    sunColor: new THREE.Color(0xff7700),
+    sunIntensity: 2.2,
+    sunPosition: new THREE.Vector3(55, 10, 15),
+    ambientColor: new THREE.Color(0xffd1b3),
+    ambientIntensity: 0.55,
+    hemiSkyColor: new THREE.Color(0xf97316),
+    hemiGroundColor: new THREE.Color(0x7c2d12),
+    hemiIntensity: 0.5,
+    fillColor: new THREE.Color(0xc084fc),
+    fillIntensity: 0.4,
+    rimColor: new THREE.Color(0xfde047),
+    rimIntensity: 0.6,
+    exposure: 1.1,
+    lampIntensity: 0.8,
+    cloudColor: new THREE.Color(0xfcbba1),
+    rain: false,
+  },
+  night: {
+    name: '夜晚',
+    bgColor: new THREE.Color(0x090d16),
+    fogColor: new THREE.Color(0x0b1324),
+    fogDensity: 0.012,
+    sunColor: new THREE.Color(0x60a5fa),
+    sunIntensity: 0.3,
+    sunPosition: new THREE.Vector3(-20, 35, -25),
+    ambientColor: new THREE.Color(0x1e293b),
+    ambientIntensity: 0.2,
+    hemiSkyColor: new THREE.Color(0x1e1b4b),
+    hemiGroundColor: new THREE.Color(0x0f172a),
+    hemiIntensity: 0.25,
+    fillColor: new THREE.Color(0x3b82f6),
+    fillIntensity: 0.2,
+    rimColor: new THREE.Color(0x818cf8),
+    rimIntensity: 0.2,
+    exposure: 0.85,
+    lampIntensity: 2.4,
+    cloudColor: new THREE.Color(0x1e293b),
+    rain: false,
+  },
+};
+
+let currentPresetKey = 'day';
+let targetPreset = LIGHTING_PRESETS.day;
+let currentLampIntensity = 0.0;
 
 /* ========================================================================
    Constants — Grid & Perimeter Road layout
@@ -219,6 +320,7 @@ function init() {
 
   setupLights();
   createGround();
+  createRain();
   loadAllModels();
 
   window.addEventListener('resize', onResize);
@@ -227,38 +329,193 @@ function init() {
 }
 
 /* ========================================================================
-   Lights
+   Lights & Presets
    ======================================================================== */
 
 function setupLights() {
-  const ambient = new THREE.AmbientLight(0xfff5e6, 0.5);
-  scene.add(ambient);
+  ambientLight = new THREE.AmbientLight(0xfff5e6, 0.5);
+  scene.add(ambientLight);
 
-  const hemi = new THREE.HemisphereLight(0x87ceeb, 0x556b2f, 0.4);
-  scene.add(hemi);
+  hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x556b2f, 0.4);
+  scene.add(hemiLight);
 
-  const sun = new THREE.DirectionalLight(0xfff8e7, 1.8);
-  sun.position.set(25, 35, 30);
-  sun.castShadow = true;
-  sun.shadow.mapSize.width = 2048;
-  sun.shadow.mapSize.height = 2048;
-  sun.shadow.camera.near = 0.5;
-  sun.shadow.camera.far = 140;
-  sun.shadow.camera.left = -60;
-  sun.shadow.camera.right = 60;
-  sun.shadow.camera.top = 60;
-  sun.shadow.camera.bottom = -60;
-  sun.shadow.bias = -0.0005;
-  sun.shadow.normalBias = 0.02;
-  scene.add(sun);
+  sunLight = new THREE.DirectionalLight(0xfff8e7, 1.8);
+  sunLight.position.set(25, 35, 30);
+  sunLight.castShadow = true;
+  sunLight.shadow.mapSize.width = 2048;
+  sunLight.shadow.mapSize.height = 2048;
+  sunLight.shadow.camera.near = 0.5;
+  sunLight.shadow.camera.far = 140;
+  sunLight.shadow.camera.left = -60;
+  sunLight.shadow.camera.right = 60;
+  sunLight.shadow.camera.top = 60;
+  sunLight.shadow.camera.bottom = -60;
+  sunLight.shadow.bias = -0.0005;
+  sunLight.shadow.normalBias = 0.02;
+  scene.add(sunLight);
 
-  const fill = new THREE.DirectionalLight(0xb0d4f1, 0.4);
-  fill.position.set(-15, 10, -20);
-  scene.add(fill);
+  fillLight = new THREE.DirectionalLight(0xb0d4f1, 0.4);
+  fillLight.position.set(-15, 10, -20);
+  scene.add(fillLight);
 
-  const rim = new THREE.DirectionalLight(0xffecd2, 0.3);
-  rim.position.set(-8, 15, 25);
-  scene.add(rim);
+  rimLight = new THREE.DirectionalLight(0xffecd2, 0.3);
+  rimLight.position.set(-8, 15, 25);
+  scene.add(rimLight);
+}
+
+function createRain() {
+  const count = 2800;
+  const positions = new Float32Array(count * 3);
+  const velocities = new Float32Array(count);
+
+  for (let i = 0; i < count; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 120;
+    positions[i * 3 + 1] = Math.random() * 60;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 120;
+    velocities[i] = 30 + Math.random() * 20;
+  }
+
+  rainGeometry = new THREE.BufferGeometry();
+  rainGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  const rainMaterial = new THREE.PointsMaterial({
+    color: 0xa5f3fc,
+    size: 0.3,
+    transparent: true,
+    opacity: 0.75,
+    blending: THREE.AdditiveBlending,
+  });
+
+  rainParticles = new THREE.Points(rainGeometry, rainMaterial);
+  rainParticles.visible = false;
+  rainParticles.userData = { velocities };
+  scene.add(rainParticles);
+}
+
+function updateRain(dt) {
+  if (!rainParticles || !rainParticles.visible) return;
+  const positions = rainGeometry.attributes.position.array;
+  const velocities = rainParticles.userData.velocities;
+  const count = positions.length / 3;
+
+  for (let i = 0; i < count; i++) {
+    positions[i * 3 + 1] -= velocities[i] * dt;
+    positions[i * 3] += Math.sin(clock.getElapsedTime() * 3 + i) * 0.04;
+    if (positions[i * 3 + 1] < 0) {
+      positions[i * 3 + 1] = 55 + Math.random() * 5;
+    }
+  }
+  rainGeometry.attributes.position.needsUpdate = true;
+}
+
+function attachStreetLampLight(lampObj) {
+  const pointLight = new THREE.PointLight(0xffe082, 0, 16, 1.2);
+  pointLight.position.set(0, 4.2, 0);
+
+  const bulbGeo = new THREE.SphereGeometry(0.18, 12, 12);
+  const bulbMat = new THREE.MeshBasicMaterial({
+    color: 0xfff3c4,
+    transparent: true,
+    opacity: 0,
+  });
+  const bulbMesh = new THREE.Mesh(bulbGeo, bulbMat);
+  bulbMesh.position.set(0, 4.2, 0);
+
+  lampObj.add(pointLight);
+  lampObj.add(bulbMesh);
+
+  streetLampLights.push({ light: pointLight, bulb: bulbMesh });
+}
+
+function setLightingPreset(key) {
+  if (!LIGHTING_PRESETS[key]) return;
+  currentPresetKey = key;
+  targetPreset = LIGHTING_PRESETS[key];
+
+  if (rainParticles) {
+    if (targetPreset.rain) {
+      rainParticles.visible = true;
+      rainParticles.material.opacity = 0.75;
+    } else {
+      rainParticles.visible = false;
+    }
+  }
+
+  const icons = {
+    day: '☀️',
+    rainy: '🌧️',
+    sunset: '🌅',
+    night: '🌙',
+  };
+
+  showCameraToast(`${icons[key] || '🌆'} 切換氣氛：${targetPreset.name}模式`);
+}
+
+function updateLighting(dt) {
+  if (!targetPreset) return;
+
+  const speed = Math.min(dt * 3.5, 1.0);
+
+  if (scene.background) {
+    scene.background.lerp(targetPreset.bgColor, speed);
+  }
+
+  if (scene.fog) {
+    scene.fog.color.lerp(targetPreset.fogColor, speed);
+    scene.fog.density += (targetPreset.fogDensity - scene.fog.density) * speed;
+  }
+
+  if (sunLight) {
+    sunLight.color.lerp(targetPreset.sunColor, speed);
+    sunLight.intensity += (targetPreset.sunIntensity - sunLight.intensity) * speed;
+    sunLight.position.lerp(targetPreset.sunPosition, speed);
+  }
+
+  if (ambientLight) {
+    ambientLight.color.lerp(targetPreset.ambientColor, speed);
+    ambientLight.intensity += (targetPreset.ambientIntensity - ambientLight.intensity) * speed;
+  }
+
+  if (hemiLight) {
+    hemiLight.color.lerp(targetPreset.hemiSkyColor, speed);
+    hemiLight.groundColor.lerp(targetPreset.hemiGroundColor, speed);
+    hemiLight.intensity += (targetPreset.hemiIntensity - hemiLight.intensity) * speed;
+  }
+
+  if (fillLight) {
+    fillLight.color.lerp(targetPreset.fillColor, speed);
+    fillLight.intensity += (targetPreset.fillIntensity - fillLight.intensity) * speed;
+  }
+
+  if (rimLight) {
+    rimLight.color.lerp(targetPreset.rimColor, speed);
+    rimLight.intensity += (targetPreset.rimIntensity - rimLight.intensity) * speed;
+  }
+
+  if (renderer) {
+    renderer.toneMappingExposure += (targetPreset.exposure - renderer.toneMappingExposure) * speed;
+  }
+
+  currentLampIntensity += (targetPreset.lampIntensity - currentLampIntensity) * speed;
+  streetLampLights.forEach(({ light, bulb }) => {
+    if (light) light.intensity = currentLampIntensity * 1.5;
+    if (bulb) {
+      bulb.material.opacity = Math.min(currentLampIntensity / 2.0, 1.0);
+      bulb.visible = currentLampIntensity > 0.05;
+    }
+  });
+
+  if (rainParticles && targetPreset.rain) {
+    updateRain(dt);
+  }
+
+  clouds.forEach((c) => {
+    c.mesh.traverse((child) => {
+      if (child.isMesh && child.material) {
+        child.material.color.lerp(targetPreset.cloudColor, speed);
+      }
+    });
+  });
 }
 
 /* ========================================================================
@@ -518,10 +775,14 @@ function layoutTrees() {
 
 function layoutFurniture() {
   [-10, -5, 5, 10].forEach((pos) => {
-    place('street-lamp-01', { x: -3.2, y: 0, z: pos });
-    place('street-lamp-01', { x: 3.2, y: 0, z: pos });
-    place('street-lamp-01', { x: pos, y: 0, z: -3.2 });
-    place('street-lamp-01', { x: pos, y: 0, z: 3.2 });
+    const p1 = place('street-lamp-01', { x: -3.2, y: 0, z: pos });
+    const p2 = place('street-lamp-01', { x: 3.2, y: 0, z: pos });
+    const p3 = place('street-lamp-01', { x: pos, y: 0, z: -3.2 });
+    const p4 = place('street-lamp-01', { x: pos, y: 0, z: 3.2 });
+
+    [p1, p2, p3, p4].forEach((lampObj) => {
+      if (lampObj) attachStreetLampLight(lampObj);
+    });
   });
 
   place('bench-01', { x: -3.4, y: 0, z: -6 }, Math.PI / 2);
@@ -779,8 +1040,8 @@ function setupClouds() {
   if (!cloudModel) return;
 
   const cloudCount = 14;
-  const spreadX = 90;
-  const spreadZ = 70;
+  const spreadX = 25;
+  const spreadZ = 20;
 
   for (let i = 0; i < cloudCount; i++) {
     const clone = cloudModel.clone();
@@ -800,7 +1061,7 @@ function setupClouds() {
     });
 
     const startX = -spreadX + Math.random() * spreadX * 2;
-    const y = 20 + Math.random() * 15;
+    const y = 13.5 + Math.random() * 5;
     const z = -spreadZ + Math.random() * spreadZ * 2;
     clone.position.set(startX, y, z);
     clone.rotation.y = Math.random() * Math.PI * 2;
@@ -1005,6 +1266,19 @@ function updateAutoCamera(dt) {
    ======================================================================== */
 
 function setupUI() {
+  const lightingBtns = document.querySelectorAll('.lighting-btn');
+  lightingBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const preset = btn.getAttribute('data-preset');
+      if (!preset || !LIGHTING_PRESETS[preset]) return;
+
+      lightingBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      setLightingPreset(preset);
+    });
+  });
+
   document.getElementById('btn-reset').addEventListener('click', () => {
     camera.position.set(42, 32, 42);
     controls.target.set(0, 1, 0);
@@ -1126,6 +1400,7 @@ function animate() {
   updateCars(dt);
   updateClouds(dt);
   updateAutoCamera(dt);
+  updateLighting(dt);
 
   controls.update();
   renderer.render(scene, camera);
