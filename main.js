@@ -1,9 +1,9 @@
 /**
- * Three.js 3D 街景遊樂場
- * 使用來自 threejsassets.com 的免費 Low-Poly 3D 模型
+ * Three.js 3D City Street Scene Playground
+ * Built with free low-poly 3D models from threejsassets.com
  *
- * 授權：threejsassets.com Free Tier — 可商用，無需署名
- * 來源：https://threejsassets.com/assets/free
+ * License: threejsassets.com Free Tier — commercial use allowed, no attribution required
+ * Source: https://threejsassets.com/assets/free
  */
 
 import * as THREE from 'three';
@@ -176,7 +176,7 @@ let rainGeometry = null;
 
 const LIGHTING_PRESETS = {
   day: {
-    name: '白天',
+    name: 'Day',
     bgColor: new THREE.Color(0x87ceeb),
     fogColor: new THREE.Color(0xc8e6ff),
     fogDensity: 0.008,
@@ -198,7 +198,7 @@ const LIGHTING_PRESETS = {
     rain: false,
   },
   rainy: {
-    name: '雨天',
+    name: 'Rainy',
     bgColor: new THREE.Color(0x3a4856),
     fogColor: new THREE.Color(0x3a4856),
     fogDensity: 0.018,
@@ -220,7 +220,7 @@ const LIGHTING_PRESETS = {
     rain: true,
   },
   sunset: {
-    name: '黃昏',
+    name: 'Sunset',
     bgColor: new THREE.Color(0xe06d53),
     fogColor: new THREE.Color(0xee8e73),
     fogDensity: 0.009,
@@ -242,7 +242,7 @@ const LIGHTING_PRESETS = {
     rain: false,
   },
   night: {
-    name: '夜晚',
+    name: 'Night',
     bgColor: new THREE.Color(0x090d16),
     fogColor: new THREE.Color(0x0b1324),
     fogDensity: 0.012,
@@ -448,7 +448,7 @@ function setLightingPreset(key) {
     night: '🌙',
   };
 
-  showCameraToast(`${icons[key] || '🌆'} 切換氣氛：${targetPreset.name}模式`);
+  showCameraToast(`${icons[key] || '🌆'} Preset: ${targetPreset.name}`);
 }
 
 function updateLighting(dt) {
@@ -552,7 +552,7 @@ function loadAllModels() {
   const updateProgress = (name) => {
     loaded++;
     const pct = Math.round((loaded / total) * 100);
-    document.getElementById('loading-status').textContent = `載入 ${name}…`;
+    document.getElementById('loading-status').textContent = `Loading ${name}…`;
     document.getElementById('progress-fill').style.width = `${pct}%`;
     document.getElementById('loading-percent').textContent = `${pct}%`;
 
@@ -1114,10 +1114,10 @@ const cameraState = {
   poiTimer: 0,
   poiIndex: 0,
   poiList: [
-    { name: '十字路口車流中心', target: new THREE.Vector3(0, 1, 0), dist: 42, phi: 1.05 },
-    { name: '公寓社區與巷弄', target: new THREE.Vector3(18, 5, -18), dist: 35, phi: 1.12 },
-    { name: '轉角便利店與計程車', target: new THREE.Vector3(-16, 3, 16), dist: 32, phi: 1.20 },
-    { name: '綠樹公車亭與林蔭道', target: new THREE.Vector3(16, 2, 16), dist: 34, phi: 1.08 },
+    { name: 'Central Intersection Traffic', target: new THREE.Vector3(0, 1, 0), dist: 42, phi: 1.05 },
+    { name: 'Apartments & Alleys', target: new THREE.Vector3(18, 5, -18), dist: 35, phi: 1.12 },
+    { name: 'Corner Store & Taxi', target: new THREE.Vector3(-16, 3, 16), dist: 32, phi: 1.20 },
+    { name: 'Bus Shelter & Tree Boulevard', target: new THREE.Vector3(16, 2, 16), dist: 34, phi: 1.08 },
   ],
 
   toastTimer: null,
@@ -1180,12 +1180,12 @@ function updateAutoCamera(dt) {
       cameraState.sequenceIndex = (cameraState.sequenceIndex + 1) % cameraState.sequenceModes.length;
       const nextMode = cameraState.sequenceModes[cameraState.sequenceIndex];
       const modeNames = {
-        cinematic: '🎬 動態巡航',
-        street: '🏎️ 街景俯仰',
-        poi: '🎯 焦點巡航',
-        panorama: '🏙️ 全景環繞',
+        cinematic: '🎬 Cinematic',
+        street: '🏎️ Street Level',
+        poi: '🎯 POI Cruise',
+        panorama: '🏙️ Panorama',
       };
-      showCameraToast(`🔄 自動切換：${modeNames[nextMode] || nextMode}`);
+      showCameraToast(`🔄 Auto Switch: ${modeNames[nextMode] || nextMode}`);
     }
     activeMode = cameraState.sequenceModes[cameraState.sequenceIndex];
   }
@@ -1231,7 +1231,7 @@ function updateAutoCamera(dt) {
       cameraState.poiTimer = 0;
       cameraState.poiIndex = (cameraState.poiIndex + 1) % cameraState.poiList.length;
       const currentPOI = cameraState.poiList[cameraState.poiIndex];
-      showCameraToast(`🎯 焦點聚焦：${currentPOI.name}`);
+      showCameraToast(`🎯 Focusing: ${currentPOI.name}`);
     }
 
     const currentPOI = cameraState.poiList[cameraState.poiIndex];
@@ -1284,7 +1284,7 @@ function setupUI() {
     controls.target.set(0, 1, 0);
     controls.update();
     syncCameraSphericalFromCurrent();
-    showCameraToast('視角已重置');
+    showCameraToast('Camera view reset');
   });
 
   const btnToggleRotate = document.getElementById('btn-toggle-rotate');
@@ -1314,9 +1314,9 @@ function setupUI() {
     updateAutoOrbitIcon();
     if (cameraState.enabled) {
       syncCameraSphericalFromCurrent();
-      showCameraToast('自動運鏡：已開啟');
+      showCameraToast('Auto Cruise: Enabled');
     } else {
-      showCameraToast('自動運鏡：已手動關閉');
+      showCameraToast('Auto Cruise: Paused (Manual)');
     }
   });
 
@@ -1328,11 +1328,11 @@ function setupUI() {
       cameraState.sequenceTimer = 0;
 
       const labels = {
-        cinematic: '🎬 運鏡：動態巡航',
-        panorama: '🏙️ 運鏡：全景環繞',
-        street: '🏎️ 運鏡：街景俯仰',
-        poi: '🎯 運鏡：焦點巡航',
-        auto_sequence: '🔄 運鏡：自動切換模式',
+        cinematic: '🎬 Cruise: Cinematic',
+        panorama: '🏙️ Cruise: Panorama',
+        street: '🏎️ Cruise: Street Level',
+        poi: '🎯 Cruise: POI',
+        auto_sequence: '🔄 Cruise: Auto Sequence',
       };
       showCameraToast(labels[mode] || mode);
 
@@ -1373,7 +1373,7 @@ function populateInfoPanel() {
         <span class="model-name">${entry.name}</span>
         <span class="model-meta"> · ${entry.category}</span>
       </div>
-      <a href="${entry.url}" target="_blank" rel="noopener">來源 ↗</a>
+      <a href="${entry.url}" target="_blank" rel="noopener">Source ↗</a>
     `;
     list.appendChild(item);
   });
